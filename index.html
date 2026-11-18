@@ -1,308 +1,389 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#172554">
-<title>TextileFlow Scan – May Hải</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d3557">
+<title>Quét tem nhãn</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#172033;background:#f3f6fb}
-*{box-sizing:border-box}body{margin:0}main{max-width:760px;margin:auto;padding:14px}
-header{background:#172554;color:white;padding:18px 16px;border-radius:16px;margin-bottom:14px}
-h1{font-size:21px;margin:0 0 4px}header p{margin:0;color:#dbeafe;font-size:13px}
-.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 2px 8px #0f172a0a}
-label{display:block;font-weight:650;font-size:14px;margin:0 0 7px}
-select,input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:white}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{color:#64748b;font-size:12px}
-.status{padding:10px 12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
-.status.err{background:#fef2f2;color:#991b1b}.status.ok{background:#ecfdf5;color:#065f46}
-.video-wrap{position:relative;background:#0f172a;border-radius:12px;overflow:hidden;min-height:220px}
-video{display:block;width:100%;max-height:62vh;object-fit:contain;background:#0f172a}
-.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-button{border:0;border-radius:10px;padding:13px 12px;font-size:15px;font-weight:700;cursor:pointer;background:#1d4ed8;color:white}
-button.secondary{background:#e2e8f0;color:#1e293b}button.danger{background:#b91c1c}button:disabled{opacity:.45;cursor:not-allowed}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#f8fafc;border-radius:10px;padding:10px;text-align:center}
-.stat b{display:block;font-size:19px}.stat span{font-size:11px;color:#64748b}
-textarea{width:100%;min-height:76px;border:1px solid #cbd5e1;border-radius:10px;padding:10px;font:13px ui-monospace,monospace}
-.small{font-size:12px;color:#64748b;line-height:1.5}.success-flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-background:#064e3bcc;color:white;font-size:clamp(48px,15vw,88px);font-weight:900;opacity:0;pointer-events:none;z-index:5}
-.success-flash.show{animation:flash .75s ease-out}
-@keyframes flash{0%{opacity:0;transform:scale(.8)}20%{opacity:1;transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:scale(1.08)}}
-@media(max-width:480px){main{padding:10px}.grid{grid-template-columns:1fr}}
+  :root{--denim:#1d3557;--ink:#14213d;--amber:#ffb703;--ok:#2fbf71;--err:#e5383b}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden}
+  [hidden]{display:none!important}
+  #top{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;padding:10px;padding-top:calc(10px + env(safe-area-inset-top));background:rgba(20,33,61,.94);align-items:center}
+  #reload{background:#fff;color:var(--ink);padding:5px 12px;font-size:16px;border-radius:20px}
+  .field{flex:1 1 28%;min-width:0;background:#fff;color:var(--ink);text-align:left;padding:6px 12px;border-radius:10px;font-weight:400;display:block}
+  .field small{display:block;font-size:11px;color:#5b6577;font-weight:600}
+  .field b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sumbar{flex:1 1 100%;display:flex;align-items:center;justify-content:space-between;gap:10px;order:9}
+  .sumbar>span:first-child{min-width:0}
+  .pill{background:var(--amber);color:var(--ink);font-weight:800;border-radius:20px;padding:5px 12px;font-size:14px;white-space:nowrap}
+  #pend{background:#fff}
+  #sheet,#sum{position:fixed;inset:0;z-index:20;background:#f4f5f7;color:var(--ink);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+  .head{display:flex;align-items:center;gap:8px;padding:10px;background:var(--denim);color:#fff}
+  .head .ttl{flex:1;font-weight:800;font-size:18px}
+  .head button{background:rgba(255,255,255,.18);color:#fff;padding:8px 14px;font-size:18px}
+  .crumb{padding:8px 14px;font-size:14px;font-weight:600;color:#33415c}
+  #sQ{margin:0 10px 8px;font:inherit;font-size:16px;padding:12px;border:2px solid #cfd6e2;border-radius:10px;width:calc(100% - 20px)}
+  #sList{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:58px;text-align:left;background:#fff;color:var(--ink);border-radius:0;border-bottom:1px solid #e3e7ef;padding:14px;font-size:18px;font-weight:600}
+  .row small{font-weight:400;font-size:13px;color:#5b6577;white-space:nowrap}
+  .row.on{background:#fff3cd}.row .t{word-break:break-all}
+  #sumWrap{flex:1;overflow:auto;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  #sum table{width:100%;border-collapse:collapse;background:#fff;font-size:18px}
+  #sum th{position:sticky;top:0;background:#e3e7ef;padding:10px;text-align:right;font-size:13px}
+  #sum td{padding:14px 10px;text-align:right;border-bottom:1px solid #e3e7ef;font-weight:600}
+  #sum th:first-child,#sum td:first-child{text-align:left}
+  #sum tfoot td{background:#fff3cd;font-weight:800}
+  .neg{color:var(--err)}.pos{color:#c77700}.zero{color:#1f9a58}
+  .bar{height:6px;background:#e3e7ef;border-radius:3px;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;background:var(--ok)}
+  #err{position:absolute;bottom:210px;left:10px;right:10px;z-index:4;background:var(--err);border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600;display:none}
+  #cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #guide{position:absolute;inset:0;border:4px solid transparent;pointer-events:none;transition:border-color .15s}
+  #guide.ok{border-color:var(--ok)}#guide.bad{border-color:var(--err)}
+  #plus{position:absolute;left:0;right:0;top:40%;text-align:center;z-index:4;font-size:88px;font-weight:800;color:var(--ok);text-shadow:0 2px 14px rgba(0,0,0,.8);pointer-events:none;opacity:0}
+  #plus.go{animation:pop .8s ease-out}
+  @keyframes pop{0%{opacity:0;transform:scale(.6)}20%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:translateY(-40px) scale(1)}}
+  @keyframes fade{0%{opacity:1}100%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){#plus.go{animation:fade .8s}}
+  #bottom{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:12px 12px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.88) 30%);display:grid;gap:8px}
+  #first{font-size:26px;font-weight:800;line-height:1.15;word-break:break-all}
+  #txt{font-size:13px;opacity:.9;white-space:pre-wrap;max-height:5.6em;overflow:hidden}
+  #meta{font-size:12px;opacity:.7;min-height:16px}
+  #row{display:flex;gap:10px}
+  button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:14px;cursor:pointer}
+  #shot{flex:1;background:var(--amber);color:var(--ink);font-size:20px;padding:18px}
+  #undo{background:rgba(255,255,255,.18);color:#fff}
+  button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
 </style>
 </head>
 <body>
-<main>
-<header><h1>TextileFlow Scan</h1><p>May Hải · Camera trực tiếp · OCR trên thiết bị · Chỉ lưu 2 dòng đầu tem</p></header>
+<div id="top">
+  <button id="fMua" class="field" aria-label="Chọn mùa sản xuất"><small>Mùa SX</small><b id="vMua">—</b></button>
+  <button id="fOrder" class="field" aria-label="Chọn đơn hàng"><small>Đơn hàng</small><b id="vOrder">—</b></button>
+  <button id="fGiao" class="field" aria-label="Chọn đợt giao hàng"><small>Giao hàng</small><b id="vGiao">—</b></button>
+  <button id="reload" aria-label="Làm mới danh sách đơn hàng">↻</button><span class="pill" id="cnt">Quét 0</span><span class="pill" id="pend">Chờ 0</span>
+  <button id="fSum" class="field sumbar" aria-label="Xem số lượng theo cỡ"><span><small>Theo cỡ · bấm xem chi tiết</small><b id="vSum">—</b></span><span>›</span></button>
+</div>
+<div id="err" role="alert"></div>
+<video id="cam" playsinline muted autoplay></video>
+<div id="guide"></div>
+<div id="plus" aria-hidden="true">+1</div>
+<div id="bottom">
+  <div><div id="first">Đang khởi động…</div><div id="txt"></div><div id="meta"></div></div>
+  <div id="row"><button id="shot">QUÉT</button><button id="undo">Hủy</button></div>
+</div>
 
-<section class="card">
- <div class="grid">
-  <div><label for="styleSelect">Style / Đơn hàng</label><select id="styleSelect"><option value="">Đang tải danh sách Style…</option></select></div>
-  <div><label for="seasonDisplay">Mùa SX</label><input id="seasonDisplay" readonly placeholder="Tự động theo Style"></div>
- </div>
- <p class="muted">Chọn Style; Mùa SX được lấy tự động từ sheet STYLE.</p>
- <label for="accessPin">Mã PIN ghi dữ liệu</label><input id="accessPin" type="password" inputmode="numeric" autocomplete="off" placeholder="Nhập mã PIN do quản trị cấp">
- <div class="buttons"><button id="reloadBtn" class="secondary">Tải lại Style</button><button id="pingBtn" class="secondary">Kiểm tra kết nối</button></div>
-</section>
+<div id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sTitle">
+  <div class="head"><button id="sBack" aria-label="Quay lại">←</button><div class="ttl" id="sTitle">Chọn đơn hàng</div><button id="sClose" aria-label="Đóng">✕</button></div>
+  <div class="crumb" id="sCrumb"></div>
+  <input id="sQ" type="search" placeholder="Tìm tên đơn hàng" autocomplete="off">
+  <div id="sList"></div>
+</div>
 
-<section class="card">
- <label>Camera sau – chụp toàn bộ tem</label>
- <div class="video-wrap"><video id="video" autoplay muted playsinline></video><div id="successFlash" class="success-flash">+1</div></div>
- <div class="buttons"><button id="startBtn">Bật camera và quét</button><button id="stopBtn" class="danger" disabled>Dừng camera</button></div>
- <p class="small">Đưa toàn bộ tem vào hình camera, không cần căn chỉnh khung. Ứng dụng nhận diện chữ trên ảnh, sắp xếp các dòng theo vị trí từ trên xuống và CHỈ gửi 2 dòng đầu tiên vào CSDL. Thuật toán ưu tiên 2 hàng chữ trên cùng (ví dụ: 6 / 160/70A), bỏ các biểu tượng và phần hướng dẫn giặt phía dưới. Nên giữ tem đứng yên khoảng 1 giây khi đưa vào.</p>
-</section>
+<div id="sum" hidden role="dialog" aria-modal="true" aria-labelledby="sumTitle">
+  <div class="head"><div class="ttl" id="sumTitle">Số lượng theo cỡ</div><button id="sumRefresh" aria-label="Làm mới">↻</button><button id="sumClose" aria-label="Đóng">✕</button></div>
+  <div class="crumb" id="sumCrumb"></div>
+  <div id="sumWrap"><table><thead><tr><th>Cỡ</th><th>Kế hoạch</th><th>Đã quét</th><th>Chênh</th></tr></thead><tbody id="sumBody"></tbody><tfoot id="sumFoot"></tfoot></table></div>
+</div>
+<input id="file" type="file" accept="image/*" capture="environment" hidden>
 
-<section class="card">
- <label>Trạng thái</label><div id="status" class="status">Đang khởi tạo ứng dụng…</div>
- <div class="stats" style="margin-top:10px">
-  <div class="stat"><b id="countOk">0</b><span>Đã ghi CSDL</span></div>
-  <div class="stat"><b id="countFail">0</b><span>OCR lỗi</span></div>
-  <div class="stat"><b id="countTotal">0</b><span>Tổng lượt</span></div>
- </div>
-</section>
-
-<section class="card">
- <label>Hai dòng OCR được ghi nhận (mã dòng 1 + cỡ vóc dòng 2)</label><textarea id="ocrResult" readonly placeholder="Hai dòng đầu tiên của tem sẽ hiển thị tại đây…"></textarea>
- <div class="small" id="lastResult">Chưa có lượt quét.</div>
-</section>
-<p class="small">Ảnh chỉ được xử lý trong bộ nhớ thiết bị, không tải lên Drive. Chỉ văn bản của 2 dòng đầu tiên được gửi đi. OCR rỗng/lỗi được chuyển vào CSDL_OCR_LOI.</p>
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <script>
-(() => {
-'use strict';
-const API_URL='https://script.google.com/macros/s/AKfycbyKzO4SxllWv2ivAeT0LwdPcEvCBuxmLz6HFr2e3A4GkxO_jG35y-O1ZRwxMUYN7OkI/exec';
-const $=id=>document.getElementById(id);
-const state={styles:[],stream:null,worker:null,running:false,busy:false,previous:null,motionSeen:false,stableAt:0,lastCaptureAt:0,ok:0,fail:0,total:0,raf:0,audio:null};
-const DETECT_W=144,DETECT_H=108,MOTION_THRESHOLD=12,STABLE_MS=800,COOLDOWN_MS=1600,MAX_IMAGE_W=1100;
+// ===== CẤU HÌNH =====
+const API_URL = 'https://script.google.com/macros/s/AKfycbxcZkzeZu2X5lVJS7V2qdkVu7XH9_YfJBng6Ys0eKEEXU-TFR3w1x3cS4MvqkmRzS2i/exec';
+const KEY = '12345678';   // phải giống KEY trong Code.gs
+const MODE = 'hybrid';    // 'hybrid' | 'local' | 'server' (server = chỉ OCR Google)
+const LANG = 'vie';
+const MIN_CONF = 55, LOW_CONF = 75, FLUSH_MS = 4000, FLUSH_N = 40, MAX_W = 1920;
+const CROP = { x: 0, y: 0, w: 1, h: 1 };   // vùng chụp: toàn bộ khung hình camera (lớn hơn vùng thấy trên màn hình)
+// =====================
+const $ = id => document.getElementById(id), sleep = ms => new Promise(r => setTimeout(r, ms));
+let worker = null, localOK = false, lastText = '', lastT = 0;
+let jobs = [], queue = [], scanned = 0, sending = false, stream = null, audio = null, sumData = null;
+let orders = [], cur = { mua: '', don: '', giao: '' };
+try { queue = JSON.parse(localStorage.getItem('q') || '[]'); } catch (e) {}
 
-function setStatus(msg,type){$('status').textContent=msg;$('status').className='status'+(type?' '+type:'');}
-function apiReady(){return API_URL.startsWith('https://script.google.com/macros/s/')&&API_URL.endsWith('/exec');}
-function jsonp(params,timeoutMs=15000){
- return new Promise((resolve,reject)=>{
-  const cb='tfs_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),script=document.createElement('script');
-  const query=new URLSearchParams({...params,callback:cb,_ts:String(Date.now())});let timer;
-  window[cb]=data=>{cleanup();resolve(data);};
-  function cleanup(){clearTimeout(timer);delete window[cb];script.remove();}
-  script.onerror=()=>{cleanup();reject(new Error('Không tải được phản hồi Apps Script. Kiểm tra URL /exec và quyền triển khai.'));};
-  timer=setTimeout(()=>{cleanup();reject(new Error('Hết thời gian chờ Apps Script.'));},timeoutMs);
-  script.src=API_URL+'?'+query.toString();document.head.appendChild(script);
- });
-}
-async function loadStyles(){
- if(!apiReady())throw new Error('URL Apps Script /exec chưa đúng trong API_URL.');
- setStatus('Đang tải danh sách Style…');
- const data=await jsonp({action:'setup'});
- if(!data||!data.ok)throw new Error(data?.error||'Không tải được danh sách Style.');
- state.styles=data.styles||[];
- const select=$('styleSelect');select.innerHTML='<option value="">-- Chọn Style --</option>';
- state.styles.forEach((item,i)=>{const op=document.createElement('option');op.value=String(i);op.textContent=item.style+' — '+item.season;select.appendChild(op);});
- $('seasonDisplay').value='';setStatus('Đã tải '+state.styles.length+' cặp Style / Mùa SX.','ok');
-}
-$('styleSelect').addEventListener('change',()=>{const x=state.styles[Number($('styleSelect').value)];$('seasonDisplay').value=x?x.season:'';});
-$('reloadBtn').addEventListener('click',()=>loadStyles().catch(e=>setStatus(e.message,'err')));
-$('pingBtn').addEventListener('click',async()=>{try{const r=await jsonp({action:'ping'});setStatus(r.ok?'Kết nối Apps Script thành công · '+(r.time||'OK'):r.error,'ok');}catch(e){setStatus(e.message,'err');}});
-function selectedStyle(){const v=$('styleSelect').value;if(v===''||!state.styles[Number(v)])throw new Error('Hãy chọn Style trước khi bật camera.');return state.styles[Number(v)];}
-function requestId(){return 'tfs_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,12);}
+const api = (action, p) => fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+  body: JSON.stringify(Object.assign({ key: KEY, action: action }, p || {})) })
+  .then(r => r.text()).then(t => {
+    let j; try { j = JSON.parse(t); } catch (e) { throw new Error('API trả về trang web thay vì dữ liệu. Kiểm tra API_URL (phải là link /exec), quyền truy cập "Bất kỳ ai" và đã triển khai Phiên bản mới.'); }
+    if (!j.ok) throw new Error(j.error || 'Lỗi máy chủ'); return j; });
+const persist = () => { try { localStorage.setItem('q', JSON.stringify(queue)); } catch (e) {} };
+const ui = () => { $('cnt').textContent = 'Quét ' + scanned; $('pend').textContent = 'Chờ ' + (queue.length + jobs.length); };
+const showErr = m => { $('err').textContent = m || ''; $('err').style.display = m ? 'block' : 'none'; };
+const flash = c => { const g = $('guide'); g.className = c; setTimeout(() => g.className = '', 350); };
+const plus = () => { const p = $('plus'); p.classList.remove('go'); void p.offsetWidth; p.classList.add('go'); };
 
-async function startCamera(){
- if(state.running)return;selectedStyle();
- if(!navigator.mediaDevices?.getUserMedia)throw new Error('Hãy mở trang bằng Chrome HTTPS để sử dụng camera.');
- try{
-  state.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
-  $('video').srcObject=state.stream;await $('video').play();
-  if(!state.audio){try{state.audio=new (window.AudioContext||window.webkitAudioContext)();await state.audio.resume();}catch(e){}}
-  if(!state.worker){
-   setStatus('Đang khởi tạo OCR lần đầu…');
-   state.worker=await Tesseract.createWorker('eng');
-   await state.worker.setParameters({tessedit_pageseg_mode:Tesseract.PSM.SPARSE_TEXT,preserve_interword_spaces:'1',user_defined_dpi:'220'});
+// Âm thanh: bíp 2 nốt khi đọc được, 1 nốt trầm khi lỗi
+function getAudio(){ if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (audio && audio.state === 'suspended') audio.resume(); return audio; }
+document.addEventListener('pointerdown', getAudio, { passive: true });
+function tone(f, at, d){ const a = getAudio(); if (!a) return; const o = a.createOscillator(), g = a.createGain();
+  o.frequency.value = f; g.gain.value = .18; o.connect(g); g.connect(a.destination); o.start(a.currentTime + at); o.stop(a.currentTime + at + d); }
+function beep(ok){ try { if (ok) { tone(880, 0, .07); tone(1320, .08, .09); } else tone(220, 0, .22); } catch (e) {}
+  if (navigator.vibrate) navigator.vibrate(ok ? 40 : [80, 60, 80]); }
+
+const tidy = t => String(t).replace(/\r/g, '').split('\n').map(l => l.replace(/\s+$/, '')).join('\n').replace(/^\n+|\n+$/g, '');
+const norm = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+// ===== 1) Lướt chọn Mùa SX -> Đơn hàng -> Giao hàng =====
+let ordersT = 0, byMua = new Map(), lvl = 1, sp = { mua: '', don: '' };
+const MAX_ROWS = 300, NOMUA = '(không có mùa)';
+const updateFields = () => { $('vMua').textContent = cur.don ? (cur.mua || NOMUA) : '—'; $('vOrder').textContent = cur.don || '—'; $('vGiao').textContent = cur.giao || '—'; };
+const validSel = c => !!(c && c.don && c.giao && byMua.has(c.mua) && byMua.get(c.mua).has(c.don) && byMua.get(c.mua).get(c.don).indexOf(c.giao) >= 0);
+function loadOrders(fresh, first){
+  return api('orders', { fresh: !!fresh }).then(j => {
+    orders = j.orders; byMua = new Map(); ordersT = Date.now();
+    orders.forEach(o => {
+      if (!byMua.has(o.mua)) byMua.set(o.mua, new Map());
+      const m = byMua.get(o.mua); if (!m.has(o.don)) m.set(o.don, []);
+      const a = m.get(o.don); if (a.indexOf(o.giao) < 0) a.push(o.giao);
+    });
+    let want = cur;
+    if (first) { try { want = JSON.parse(localStorage.getItem('cur') || 'null') || cur; } catch (e) {} }
+    if (validSel(want)) cur = { mua: want.mua, don: want.don, giao: want.giao };
+    else if (cur.don || cur.giao) { cur = { mua: '', don: '', giao: '' }; saveCur(); }
+    updateFields(); sumData = null; loadSum();
+    let nd = 0; byMua.forEach(m => nd += m.size);
+    $('meta').textContent = 'Đã cập nhật ' + byMua.size + ' mùa · ' + nd + ' đơn · ' + orders.length + ' đợt giao';
+    if (!cur.don) $('first').textContent = 'Chọn mùa SX, đơn hàng, giao hàng';
+    if (!$('sheet').hidden) drawSheet(); else if (first && !cur.don) openSheet(1);
+  }).catch(e => showErr('Không nối được Google Sheet: ' + e.message));
+}
+function openSheet(level){
+  sp = { mua: cur.mua, don: cur.don };
+  let l = level;
+  if (l > 1 && !(cur.don && byMua.has(cur.mua) && byMua.get(cur.mua).has(cur.don))) l = 1;
+  if (l === 1 && byMua.size === 1) { sp.mua = byMua.keys().next().value; l = 2; }   // chỉ có 1 mùa: bỏ qua bước chọn mùa
+  lvl = l; $('sQ').value = ''; $('sheet').hidden = false; drawSheet();
+}
+function levelItems(){
+  if (lvl === 1) return Array.from(byMua.keys()).map(m => ({ main: m || NOMUA, val: m, sub: byMua.get(m).size + ' đơn', on: m === cur.mua && !!cur.don }));
+  const dm = byMua.get(sp.mua) || new Map();
+  if (lvl === 2) return Array.from(dm.keys()).map(d => ({ main: d, val: d, sub: dm.get(d).length + ' đợt giao', on: sp.mua === cur.mua && d === cur.don }));
+  return (dm.get(sp.don) || []).map(g => ({ main: g, val: g, sub: '', on: sp.mua === cur.mua && sp.don === cur.don && g === cur.giao }));
+}
+function drawSheet(){
+  const list = $('sList'); list.innerHTML = '';
+  $('sTitle').textContent = ['', 'Chọn mùa SX', 'Chọn đơn hàng', 'Chọn đợt giao hàng'][lvl];
+  $('sBack').hidden = lvl === 1 || (lvl === 2 && byMua.size === 1);
+  $('sCrumb').textContent = lvl === 1 ? 'Vuốt để chọn mùa sản xuất' : lvl === 2 ? 'Mùa SX: ' + (sp.mua || NOMUA) : 'Mùa SX: ' + (sp.mua || NOMUA) + '  ›  Đơn hàng: ' + sp.don;
+  const items = levelItems();
+  $('sQ').hidden = items.length <= 8;
+  $('sQ').placeholder = ['', 'Tìm mùa SX', 'Tìm tên đơn hàng', 'Tìm đợt giao hàng'][lvl];
+  const terms = norm($('sQ').value).split(/\s+/).filter(Boolean);
+  const m = items.filter(it => terms.every(t => norm(it.main).indexOf(t) >= 0));
+  m.slice(0, MAX_ROWS).forEach(it => {
+    const b = document.createElement('button'), t = document.createElement('span');
+    b.className = 'row' + (it.on ? ' on' : ''); t.className = 't'; t.textContent = (it.on ? '✓ ' : '') + it.main; b.appendChild(t);
+    if (it.sub) { const sm = document.createElement('small'); sm.textContent = it.sub; b.appendChild(sm); }
+    b.onclick = () => pick(it.val); list.appendChild(b);
+  });
+  const note = x => { const d = document.createElement('div'); d.style.cssText = 'padding:12px 14px;color:#555;font-size:14px'; d.textContent = x; list.appendChild(d); };
+  if (m.length > MAX_ROWS) note('Còn ' + (m.length - MAX_ROWS) + ' mục nữa, gõ thêm để lọc.');
+  if (!m.length) note(byMua.size ? 'Không thấy? Kiểm tra từ khóa hoặc đóng rồi bấm ↻ để cập nhật danh sách.' : 'Danh sách đang trống.');
+  const on = list.querySelector('.on'); if (on && !$('sQ').value) on.scrollIntoView({ block: 'center' });
+}
+function goLevel(l){ lvl = l; $('sQ').value = ''; drawSheet(); $('sList').scrollTop = 0; }
+function afterDon(){ const gl = byMua.get(sp.mua).get(sp.don); if (gl.length === 1) return choose(sp.mua, sp.don, gl[0]); goLevel(3); }
+function pick(v){
+  if (lvl === 1) { sp.mua = v; const dm = byMua.get(v); if (dm.size === 1) { sp.don = dm.keys().next().value; return afterDon(); } goLevel(2); }
+  else if (lvl === 2) { sp.don = v; afterDon(); }
+  else choose(sp.mua, sp.don, v);
+}
+function choose(m, d, g){ cur = { mua: m, don: d, giao: g }; $('sheet').hidden = true; updateFields(); sumData = null; loadSum(); saveCur(); $('first').textContent = 'Đưa tem vào khung'; }
+function saveCur(){ try { localStorage.setItem('cur', JSON.stringify(cur)); } catch (e) {} lastText = ''; }
+$('fMua').onclick = () => openSheet(1);
+$('fOrder').onclick = () => openSheet(2);
+$('fGiao').onclick = () => openSheet(3);
+$('sQ').oninput = drawSheet;
+$('sBack').onclick = () => goLevel(lvl - 1);
+$('sClose').onclick = () => { $('sheet').hidden = true; };
+$('reload').onclick = () => { $('meta').textContent = 'Đang cập nhật danh sách…'; loadOrders(true); };
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - ordersT > 60000) loadOrders(true); });
+const ready_ = () => !!(cur.giao && cur.don);
+loadOrders(false, true);
+
+// ===== 1b) Tổng hợp theo cỡ: kế hoạch và đã quét. Chênh = đã quét - kế hoạch (âm = còn thiếu, dương = vượt) =====
+const vn = n => n.toLocaleString('vi-VN');
+const fmtD = d => d === 0 ? '0 ✓' : (d > 0 ? '+' : '−') + vn(Math.abs(d));
+const clsD = d => d === 0 ? 'zero' : d > 0 ? 'pos' : 'neg';
+function drawSum(){
+  const s = sumData, kh = s ? s.reduce((t, x) => t + x.kh, 0) : 0, qt = s ? s.reduce((t, x) => t + x.qt, 0) : 0;
+  if (!cur.don || !cur.giao) $('vSum').textContent = '—';
+  else if (!s) $('vSum').textContent = 'Đang tải…';
+  else $('vSum').textContent = s.length + ' cỡ · ' + vn(qt) + '/' + vn(kh) + ' (' + fmtD(qt - kh) + ')';
+  if ($('sum').hidden) return;
+  $('sumCrumb').textContent = (cur.mua || NOMUA) + '  ›  ' + cur.don + '  ›  ' + cur.giao;
+  const body = $('sumBody'), foot = $('sumFoot'); body.innerHTML = ''; foot.innerHTML = '';
+  (s || []).forEach(x => {
+    const tr = document.createElement('tr'), pct = x.kh ? Math.min(100, Math.round(x.qt * 100 / x.kh)) : 100;
+    const c0 = document.createElement('td'); c0.textContent = x.co;
+    const bar = document.createElement('div'), i = document.createElement('i'); bar.className = 'bar'; i.style.width = pct + '%'; bar.appendChild(i); c0.appendChild(bar);
+    const c1 = document.createElement('td'); c1.textContent = vn(x.kh);
+    const c2 = document.createElement('td'); c2.textContent = vn(x.qt);
+    const c3 = document.createElement('td'); c3.textContent = fmtD(x.diff); c3.className = clsD(x.diff);
+    [c0, c1, c2, c3].forEach(c => tr.appendChild(c)); body.appendChild(tr);
+  });
+  const tr = document.createElement('tr');
+  if (s && s.length) {
+    [['Tổng', ''], [vn(kh), ''], [vn(qt), ''], [fmtD(qt - kh), clsD(qt - kh)]].forEach(a => {
+      const td = document.createElement('td'); td.textContent = a[0]; if (a[1]) td.className = a[1]; tr.appendChild(td); });
+  } else {
+    const td = document.createElement('td'); td.colSpan = 4; td.textContent = s ? 'Không có dữ liệu cỡ cho đơn này.' : 'Đang tải…'; tr.appendChild(td);
   }
-  state.running=true;state.busy=false;state.previous=null;state.motionSeen=false;state.stableAt=0;
-  $('startBtn').disabled=true;$('stopBtn').disabled=false;
-  setStatus('Camera đã bật. Đưa toàn bộ tem vào hình; hệ thống tự nhận diện.','ok');detectLoop();
- }catch(e){
-  stopCamera();
-  if(e.name==='NotAllowedError')throw new Error('Chrome chưa được cấp quyền Camera cho github.io. Hãy cho phép Camera trong cài đặt trang.');
-  if(e.name==='NotFoundError')throw new Error('Không tìm thấy camera.');
-  if(e.name==='NotReadableError')throw new Error('Camera đang được ứng dụng khác sử dụng.');
-  throw new Error(e.message||String(e));
- }
+  foot.appendChild(tr);
 }
-function stopCamera(){
- state.running=false;if(state.raf)cancelAnimationFrame(state.raf);state.raf=0;
- if(state.stream)state.stream.getTracks().forEach(t=>t.stop());state.stream=null;$('video').srcObject=null;
- $('startBtn').disabled=false;$('stopBtn').disabled=true;
+function loadSum(){
+  const k = cur.don + '|' + cur.giao;
+  if (!cur.don || !cur.giao) { sumData = null; drawSum(); return; }
+  api('summary', { don: cur.don, giao: cur.giao }).then(j => {
+    if (k !== cur.don + '|' + cur.giao) return;   // đã đổi đơn trong lúc tải
+    sumData = j.sizes; drawSum();
+  }).catch(e => showErr('Không tải được số lượng theo cỡ: ' + e.message));
 }
-$('startBtn').addEventListener('click',()=>startCamera().catch(e=>setStatus(e.message,'err')));
-$('stopBtn').addEventListener('click',()=>{stopCamera();setStatus('Đã dừng camera.');});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.running){stopCamera();setStatus('Camera tạm dừng khi rời trang. Nhấn Bật camera để tiếp tục.');}});
+$('fSum').onclick = () => { if (!ready_()) { $('first').textContent = 'Chọn mùa SX, đơn hàng, giao hàng trước'; return; } $('sum').hidden = false; drawSum(); loadSum(); };
+$('sumClose').onclick = () => { $('sum').hidden = true; };
+$('sumRefresh').onclick = loadSum;
+setInterval(() => { if (!document.hidden) loadSum(); }, 30000);
 
-function detectLoop(){
- if(!state.running)return;
- const v=$('video');
- if(v.readyState>=2&&!state.busy){
-  const c=document.createElement('canvas');c.width=DETECT_W;c.height=DETECT_H;
-  const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(v,0,0,DETECT_W,DETECT_H);
-  const p=ctx.getImageData(0,0,DETECT_W,DETECT_H).data,g=new Uint8Array(DETECT_W*DETECT_H);
-  for(let i=0,j=0;i<p.length;i+=4,j++)g[j]=(p[i]*.299+p[i+1]*.587+p[i+2]*.114)|0;
-  if(state.previous){
-   let diff=0;for(let i=0;i<g.length;i+=3)diff+=Math.abs(g[i]-state.previous[i]);
-   const score=diff/Math.ceil(g.length/3),now=performance.now();
-   if(score>MOTION_THRESHOLD&&now-state.lastCaptureAt>COOLDOWN_MS){state.motionSeen=true;state.stableAt=0;}
-   else if(state.motionSeen){
-    if(!state.stableAt)state.stableAt=now;
-    if(now-state.stableAt>=STABLE_MS&&now-state.lastCaptureAt>COOLDOWN_MS){state.motionSeen=false;state.lastCaptureAt=now;captureAndRead();}
-   }
-  }
-  state.previous=g;
- }
- state.raf=requestAnimationFrame(detectLoop);
+// ===== 2) Camera mở ngay =====
+async function startCam(){
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+    $('cam').srcObject = stream; await $('cam').play();
+    try { await stream.getVideoTracks()[0].applyConstraints({ advanced: [{ focusMode: 'continuous' }] }); } catch (e) {}
+  } catch (e) { showErr('Camera bị chặn (' + (e.name || 'lỗi') + '). Cho phép camera cho trang này rồi tải lại. Tạm thời dùng nút QUÉT để mở camera điện thoại.'); }
 }
 
-/*
- * Mẫu tem May Hải:
- *   Dòng 1: mã/cỡ đơn (ví dụ: 6)
- *   Dòng 2: thông số cỡ vóc (ví dụ: 160/70A)
- * Camera vẫn lấy TOÀN BỘ khung hình. Chỉ tạo ảnh xử lý OCR phóng lớn,
- * tăng tương phản; không cắt theo dấu gạch ngang hoặc biểu tượng giặt.
- */
-function makeOcrCanvas(video){
- const scale=Math.min(3,Math.max(2,1800/video.videoWidth));
- const w=Math.max(1,Math.round(video.videoWidth*scale));
- const h=Math.max(1,Math.round(video.videoHeight*scale));
- const c=document.createElement('canvas');c.width=w;c.height=h;
- const x=c.getContext('2d',{willReadFrequently:true});
- x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
- x.drawImage(video,0,0,w,h);
- const im=x.getImageData(0,0,w,h),d=im.data;
- // Khử màu nền vải, tăng tương phản chữ in; giữ ảnh xám để tránh mất nét mảnh.
- for(let i=0;i<d.length;i+=4){
-  const gray=(d[i]*.299+d[i+1]*.587+d[i+2]*.114);
-  const enhanced=Math.max(0,Math.min(255,(gray-142)*1.85+128));
-  d[i]=d[i+1]=d[i+2]=enhanced;
- }
- x.putImageData(im,0,0);
- return c;
-}
-function normalizeOcrLine(value){
- return String(value||'').replace(/[|¦]/g,'I').replace(/[“”‘’]/g,"'")
-  .replace(/[^\p{L}\p{N}\/xX×.,:;# +\-]/gu,' ')
-  .replace(/\s+/g,' ').trim();
-}
-function lineHasUsefulText(value){
- const t=normalizeOcrLine(value);
- const compact=t.replace(/[^A-Za-zÀ-ỹ0-9]/g,'');
- return compact.length>=1 && /[A-Za-zÀ-ỹ0-9]/.test(t);
-}
-function getFirstTwoLines(result){
- const lines=(result?.data?.lines||[])
-  .map(line=>({
-   text:normalizeOcrLine(line.text),
-   y:Number(line.bbox?.y0??line.baseline?.y0??0),
-   confidence:Number(line.confidence??0)
-  }))
-  .filter(x=>x.text && lineHasUsefulText(x.text) && x.confidence>=25);
- lines.sort((a,b)=>a.y-b.y);
- const picked=[];
- for(const line of lines){
-  const clean=line.text;
-  if(picked.some(p=>Math.abs(p.y-line.y)<Math.max(10,18)&&p.text===clean))continue;
-  // Hai hàng vật lý đầu tiên; bỏ các hàng chỉ gồm dấu trang trí.
-  picked.push({text:clean,y:line.y,confidence:line.confidence});
-  if(picked.length===2)break;
- }
- return picked;
-}
-function scoreTopRows(rows){
- if(!rows.length)return -1000;
- let score=rows.reduce((n,r)=>n+r.confidence,0);
- const joined=rows.map(r=>r.text).join(' ');
- if(/\b\d{2,3}\s*\/\s*\d{2,3}\s*[A-Z]?\b/i.test(joined))score+=120;
- if(/\b\d{1,3}\s*[xX×]\s*\d{1,3}\b/.test(joined))score+=100;
- if(rows.length>=2)score+=20;
- if(rows[0] && /^\d{1,3}$/.test(rows[0].text))score+=25;
- return score;
-}
-async function recognizeTopRows(canvas){
- const candidates=[];
- // PSM 6 đọc theo khối; PSM 11 đọc chữ rải rác. Chọn kết quả có
- // cấu trúc giống 2 dòng đầu của tem, không lấy phần hướng dẫn giặt bên dưới.
- for(const psm of [Tesseract.PSM.SINGLE_BLOCK,Tesseract.PSM.SPARSE_TEXT]){
-  await state.worker.setParameters({tessedit_pageseg_mode:psm,preserve_interword_spaces:'1',user_defined_dpi:'300'});
-  const result=await state.worker.recognize(canvas);
-  const rows=getFirstTwoLines(result);
-  candidates.push({rows,score:scoreTopRows(rows)});
- }
- candidates.sort((a,b)=>b.score-a.score);
- return candidates[0]?.rows||[];
-}
-async function captureAndRead(){
- if(state.busy||!state.running)return;
- state.busy=true;
- try{
-  setStatus('Đang xử lý toàn bộ tem; đối chiếu 2 dòng trên cùng…');
-  const canvas=makeOcrCanvas($('video'));
-  const firstTwo=await recognizeTopRows(canvas);
-  const text=firstTwo.map(x=>x.text).join('\n').slice(0,200);
-  $('ocrResult').value=text;
-  state.total++;updateCounters();
-  const chosen=selectedStyle(),id=requestId(),parsed=parseLabel(text);
-  const payload={
-   requestId:id,style:chosen.style,season:chosen.season,ocrText:text,
-   size:parsed.size,gang:parsed.gang,brand:parsed.brand,
-   reason:text?'Không đọc đủ tin cậy hai dòng đầu tiên của tem.':'Không nhận diện được chữ ở hai dòng đầu tiên.'
-  };
-  if(text && firstTwo.length===2 && firstTwo.every(x=>x.confidence>=25)){
-   const saved=await postAndWait('saveSuccess',payload);
-   if(!saved?.ok)throw new Error(saved?.error||'Không ghi được CSDL.');
-   state.ok++;
-   $('lastResult').textContent='Đã ghi CSDL · '+(saved.savedAt||'')+' · '+chosen.style+' · '+text.replace(/\n/g,' / ');
-   setStatus('Đã ghi nhận 1 tem. Đưa tem tiếp theo vào camera.','ok');
-   showSuccess();
-  }else{
-   const failed=await postAndWait('saveFailure',payload);
-   if(!failed?.ok)throw new Error(failed?.error||'Không ghi được CSDL_OCR_LOI.');
-   state.fail++;
-   $('lastResult').textContent='Không đọc đủ 2 dòng đầu · Đã lưu CSDL_OCR_LOI.';
-   setStatus('OCR chưa đọc đủ 2 dòng đầu; đã chuyển vào CSDL_OCR_LOI.','err');
+// ===== 3) Bộ đọc chữ =====
+async function startOcr(){
+  if (MODE !== 'server') {
+    try {
+      $('first').textContent = 'Đang nạp bộ đọc chữ…';
+      worker = await Tesseract.createWorker(LANG, 1, { logger: () => {} });
+      await worker.setParameters({ tessedit_pageseg_mode: '6', preserve_interword_spaces: '1' });
+      localOK = true;
+    } catch (e) { showErr('Không nạp được bộ đọc trên máy, dùng OCR Google (chậm hơn).'); }
   }
-  updateCounters();
- }catch(e){
-  setStatus('Lỗi lượt quét: '+e.message,'err');
- }finally{
-  state.busy=false;state.previous=null;state.motionSeen=false;state.stableAt=0;
- }
+  $('first').textContent = ready_() ? 'Đưa tem vào khung' : 'Chọn mùa SX, đơn hàng, giao hàng';
 }
-function parseLabel(raw){
- const lines=String(raw||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
- const top=lines.slice(0,2).join(' ');
- let size='';
- const patterns=[/\b\d{1,3}\s*[xX×]\s*\d{1,3}\b/,/\b\d{2,3}\s*\/\s*\d{2,3}\s*[A-Z]?\b/i,/\bSIZE\s*[:#-]?\s*([0-9]{1,3}[A-Z]?)\b/i];
- for(const re of patterns){const m=top.match(re);if(m){size=(m[1]||m[0]).replace(/\s+/g,'').toUpperCase();break;}}
- const first=lines[0]||'',x=first.match(/^\s*[xX]\s*(\d{1,3})\b/);
- const word=first.match(/[A-Za-zÀ-ỹ]+/);const gang=x?x[1]:(word?word[0][0].toUpperCase():'R');
- const brand=/\b(EXP|MGF)\b/i.test(top)?'Express':'';
- return {size,gang,brand};
+function grab(src){
+  const v = src || $('cam'), W = v.videoWidth || v.naturalWidth, H = v.videoHeight || v.naturalHeight;
+  if (!W) return null;
+  const c0 = src ? { x: 0, y: 0, w: W, h: H } : { x: W * CROP.x, y: H * CROP.y, w: W * CROP.w, h: H * CROP.h };
+  const k = Math.min(1, MAX_W / c0.w), c = document.createElement('canvas');
+  c.width = Math.round(c0.w * k); c.height = Math.round(c0.h * k);
+  const x = c.getContext('2d'); x.filter = 'grayscale(1)';
+  x.drawImage(v, c0.x, c0.y, c0.w, c0.h, 0, 0, c.width, c.height);
+  return c;
 }
-async function postAndWait(action,payload){
- const pin=$('accessPin').value.trim();if(!pin)throw new Error('Bạn chưa nhập mã PIN ghi dữ liệu.');
- const body=new URLSearchParams();body.set('action',action);body.set('data',JSON.stringify(payload));body.set('pin',pin);
- await fetch(API_URL,{method:'POST',mode:'no-cors',redirect:'follow',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body.toString()});
- for(let i=0;i<14;i++){
-  await new Promise(r=>setTimeout(r,650));
-  const s=await jsonp({action:'status',requestId:payload.requestId},9000);
-  if(s.done)return s.result;if(s.ok===false)return s;
- }
- throw new Error('Chưa nhận được xác nhận từ Apps Script. Kiểm tra nhật ký trước khi quét lại để tránh ghi trùng.');
+
+// Dựng dòng theo TỌA ĐỘ từng từ (cùng hàng ngang = cùng dòng), không dùng cách chia dòng tự động của OCR
+function linesFromWords(data){
+  let words = data.words;
+  if (!words && data.blocks) { words = []; try { data.blocks.forEach(b => b.paragraphs.forEach(p => p.lines.forEach(l => l.words.forEach(w => words.push(w))))); } catch (e) {} }
+  words = (words || []).filter(w => w.text && w.text.trim() && w.bbox);
+  if (!words.length) return null;
+  const hs = words.map(w => w.bbox.y1 - w.bbox.y0).sort((a, b) => a - b), mh = hs[hs.length >> 1] || 10;
+  const items = words.map(w => ({ w: w, cy: (w.bbox.y0 + w.bbox.y1) / 2 })).sort((a, b) => a.cy - b.cy), rows = [];
+  items.forEach(it => {
+    const r = rows[rows.length - 1];
+    if (r && Math.abs(it.cy - r.cy) <= mh * 0.6) { r.items.push(it); r.cy = r.items.reduce((t, x) => t + x.cy, 0) / r.items.length; }
+    else rows.push({ cy: it.cy, items: [it] });
+  });
+  rows.forEach(r => r.items.sort((a, b) => a.w.bbox.x0 - b.w.bbox.x0));
+  return rows;
 }
-function updateCounters(){$('countOk').textContent=state.ok;$('countFail').textContent=state.fail;$('countTotal').textContent=state.total;}
-function showSuccess(){
- const el=$('successFlash');el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
- try{if(state.audio){const o=state.audio.createOscillator(),g=state.audio.createGain();o.type='sine';o.frequency.value=1450;g.gain.value=.12;o.connect(g);g.connect(state.audio.destination);o.start();o.stop(state.audio.currentTime+.11);}}catch(e){}
+async function readLocal(cv){
+  const { data } = await worker.recognize(cv, {}, { text: true, blocks: true });
+  const rows = linesFromWords(data);
+  if (!rows) return { text: tidy(data.text), conf: Math.round(data.confidence), L: null };
+  const text = rows.map(r => r.items.map(i => i.w.text.trim()).join(' ')).join('\n');
+  const f = rows[0].items.map(i => i.w);
+  const L = { bbox: { x0: Math.min.apply(null, f.map(w => w.bbox.x0)), y0: Math.min.apply(null, f.map(w => w.bbox.y0)),
+                      x1: Math.max.apply(null, f.map(w => w.bbox.x1)), y1: Math.max.apply(null, f.map(w => w.bbox.y1)) },
+              confidence: f.reduce((t, w) => t + (w.confidence || 0), 0) / f.length };
+  return { text: tidy(text), conf: Math.round(data.confidence), L: L };
 }
-loadStyles().catch(e=>setStatus(e.message,'err'));
-})();
+// Đọc lại kỹ dòng đầu (cắt riêng, phóng to) sau khi đã đọc cả tem
+async function refineFirst(cv, res){
+  const L = res.L; if (!L || !L.bbox) return;
+  const lines = res.text.split('\n');
+  try {
+    const b = L.bbox, p = 8, x0 = Math.max(0, b.x0 - p), y0 = Math.max(0, b.y0 - p);
+    const w = Math.min(cv.width, b.x1 + p) - x0, h = Math.min(cv.height, b.y1 + p) - y0;
+    if (w < 20 || h < 8) return;
+    const k = Math.min(3, 2400 / w), c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+    c.getContext('2d').drawImage(cv, x0, y0, w, h, 0, 0, c.width, c.height);
+    await worker.setParameters({ tessedit_pageseg_mode: '7' });
+    const r = await worker.recognize(c);
+    const first = tidy(r.data.text).split('\n')[0];
+    if (first && r.data.confidence >= (L.confidence || 0) - 5) { lines[0] = first; res.text = lines.join('\n'); }
+  } catch (e) {} finally { try { await worker.setParameters({ tessedit_pageseg_mode: '6' }); } catch (e) {} }
+}
+const serverOcr = cv => api('ocr', { image: cv.toDataURL('image/jpeg', .85).split(',')[1] }).then(j => tidy(j.text));
+
+// ===== 4) Quét (chỉ quét tay) =====
+function tap(){
+  if (!$('sheet').hidden || !$('sum').hidden) return;
+  if (!ready_()) { $('first').textContent = 'Chọn mùa SX, đơn hàng, giao hàng trước'; return; }
+  if (!stream) return $('file').click();
+  const cv = grab(); if (!cv) return;
+  jobs.push({ cv: cv, g: cur.giao, d: cur.don }); ui(); flash('ok');
+  if (navigator.vibrate) navigator.vibrate(20);
+}
+$('cam').onclick = $('shot').onclick = tap;
+$('file').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (!f || !ready_()) return;
+  const g = cur.giao, d = cur.don, im = new Image(); im.onload = () => { jobs.push({ cv: grab(im), g: g, d: d }); ui(); }; im.src = URL.createObjectURL(f); };
+
+// Trả về true nếu đã ghi nhận tem
+async function scan(job){
+  const t0 = performance.now(), cv = job.cv;
+  try {
+    let text = '', conf = 0, via = 'máy', res = null;
+    if (localOK && MODE !== 'server') { res = await readLocal(cv); text = res.text; conf = res.conf; }
+    let first = text.split('\n')[0] || '';
+    let good = first.length >= 3 && conf >= MIN_CONF;
+    if (MODE !== 'local' && conf < LOW_CONF) {
+      $('first').textContent = 'Đang đọc chính xác…';
+      try { text = await serverOcr(cv); conf = 100; via = 'Google'; res = null; } catch (e) { showErr('OCR Google lỗi: ' + e.message); }
+      first = text.split('\n')[0] || ''; good = first.length >= 3;
+    }
+    if (good && res) { await refineFirst(cv, res); text = res.text; first = text.split('\n')[0] || first; }
+    if (!text) { flash('bad'); beep(false); $('first').textContent = 'Không đọc được, quét lại'; return false; }
+    const now = Date.now();
+    lastText = text; lastT = now;
+    const item = { t: now, giao: job.g, don: job.d, text: text };
+    if (conf < LOW_CONF) item.image = cv.toDataURL('image/jpeg', .6).split(',')[1];
+    queue.push(item); persist(); scanned++; ui(); flash('ok'); beep(true); plus();
+    $('first').textContent = first; $('txt').textContent = text.split('\n').slice(1).join('\n');
+    $('meta').textContent = job.d + ' · ' + job.g + ' · ' + via + ' ' + Math.round(performance.now() - t0) + ' ms';
+    if (queue.length >= FLUSH_N) flush();
+    return true;
+  } catch (e) { $('first').textContent = 'Lỗi đọc, quét lại'; showErr(String(e.message || e)); return false; }
+}
+async function loop(){
+  while (true) {
+    if (jobs.length) { await scan(jobs.shift()); ui(); }
+    await sleep(100);
+  }
+}
+$('undo').onclick = () => { if (queue.length) { queue.pop(); persist(); scanned = Math.max(0, scanned - 1); ui(); lastText = ''; $('first').textContent = 'Đã hủy tem vừa quét'; $('txt').textContent = ''; $('meta').textContent = ''; } else $('first').textContent = 'Tem đó đã gửi lên sheet'; };
+
+// ===== 5) Gửi nền theo lô =====
+function flush(){
+  if (sending || !queue.length) return;
+  sending = true; const batch = queue.splice(0, 60); persist();
+  api('save', { items: batch }).then(() => { sending = false; ui(); showErr(''); loadSum(); })
+    .catch(e => { sending = false; queue = batch.concat(queue); persist(); ui(); showErr('Chưa ghi được vào Sheet: ' + e.message + ' (sẽ tự gửi lại)'); });
+}
+setInterval(flush, FLUSH_MS);
+window.addEventListener('beforeunload', e => { if (queue.length) { e.preventDefault(); e.returnValue = ''; } });
+if (API_URL.indexOf('http') !== 0) showErr('Chưa dán link /exec của Apps Script vào API_URL trong Index.html');
+ui(); startCam(); startOcr().then(loop);
 </script>
 </body>
 </html>
